@@ -9,6 +9,7 @@ each time. As noone published such code yet - I just did, so you don't have to.
 ## Docs
 
 Documentation can be found here: [oop-timers documentation](https://dzek69.github.io/oop-timers).
+Jump directly to usage description: [oop-timers usage](https://dzek69.github.io/oop-timers/tutorial-Usage.html).
 
 ## Installing
 

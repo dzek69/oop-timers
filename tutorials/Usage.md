@@ -8,7 +8,7 @@ const { Interval } = require("oop-timers");
 const Interval = require("oop-timers/src/Interval");
 ```
 
-## EcmaScript 6+
+## EcmaScript 5
 ```javascript
 const { Interval } = require("oop-timers/dist");
 
