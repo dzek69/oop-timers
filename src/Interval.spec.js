@@ -134,7 +134,7 @@ describe("Interval", () => {
         interval.stop();
     });
 
-    it("remembers instant firing first call value when restarting", async () => {
+    it("remembers instant firing first call value when restarting", () => {
         const callback = spy();
         const interval = new Interval(callback, 100);
         interval.start();
@@ -152,7 +152,7 @@ describe("Interval", () => {
         interval.stop();
     });
 
-    it("restarts with instantly firing first call when set like that while constructing", async () => {
+    it("restarts with instantly firing first call when set like that while constructing", () => {
         const callback = spy();
         const interval = new Interval(callback, 100, true, true);
 
@@ -174,7 +174,7 @@ describe("Interval", () => {
 
         await wait(50);
         callback.__spy.calls.must.have.length(2);
-        
+
         interval.stop();
     });
 
@@ -212,7 +212,7 @@ describe("Interval", () => {
         callback.__spy.calls.must.have.length(0);
     });
 
-    it("ignores multiple stop calls", async () => {
+    it("ignores multiple stop calls", () => {
         const callback = spy();
         const interval = new Interval(callback, 300);
         (() => {
@@ -242,6 +242,118 @@ describe("Interval", () => {
         await wait(100);
         callback.__spy.calls.must.have.length(1);
         callback.__spy.calls[0].must.have.length(0);
+
+        interval.stop();
+    });
+
+    describe("should crash when time isn't a number", () => {
+        const callback = spy();
+
+        it("in constructor", () => {
+            (() => {
+                new Interval(callback, "100");
+            }).must.throw(TypeError, "Time must be a number");
+            (() => {
+                new Interval(callback, null);
+            }).must.throw(TypeError, "Time must be a number");
+            (() => {
+                new Interval(callback);
+            }).must.throw(TypeError, "Time must be a number");
+            (() => {
+                new Interval(callback, [100]);
+            }).must.throw(TypeError, "Time must be a number");
+        });
+
+        it("on start method", () => {
+            const interval = new Interval(callback, 100);
+            (() => {
+                interval.start("100");
+            }).must.throw(TypeError, "Time must be a number");
+            (() => {
+                interval.start(() => {}); // null is simply ignored on `start` to match Interval behavior
+            }).must.throw(TypeError, "Time must be a number");
+            (() => {
+                interval.start([100]);
+            }).must.throw(TypeError, "Time must be a number");
+        });
+    });
+
+    describe("should crash when time is lower than zero", () => {
+        const callback = spy();
+
+        it("in constructor", () => {
+            (() => {
+                new Interval(callback, -1);
+            }).must.throw(TypeError, "Time must be a positive number");
+            (() => {
+                new Interval(callback, -600);
+            }).must.throw(TypeError, "Time must be a positive number");
+            (() => {
+                new Interval(callback, 0);
+            }).must.not.throw();
+        });
+
+        it("on start method", () => {
+            const interval = new Interval(callback, 100);
+            (() => {
+                interval.start(-1);
+            }).must.throw(TypeError, "Time must be a positive number");
+            (() => {
+                interval.start(-600);
+            }).must.throw(TypeError, "Time must be a positive number");
+            (() => {
+                interval.start(0);
+                interval.stop();
+            }).must.not.throw();
+        });
+    });
+
+    describe("should crash when time is higher than max supported value for setInterval", () => {
+        const callback = spy();
+
+        const MAX_VALUE = 2147483647;
+
+        it("in constructor", () => {
+            (() => {
+                new Interval(callback, MAX_VALUE + 1);
+            }).must.throw(TypeError, "Time must not be greater than 2147483647");
+            (() => {
+                const interval = new Interval(callback, MAX_VALUE);
+                interval.stop();
+            }).must.not.throw();
+        });
+
+        it("on start method", () => {
+            const interval = new Interval(callback, 100);
+            (() => {
+                interval.start(MAX_VALUE + 1);
+            }).must.throw(TypeError, "Time must not be greater than 2147483647");
+            (() => {
+                interval.start(MAX_VALUE);
+                interval.stop();
+            }).must.not.throw();
+        });
+    });
+
+    it("should allow Infinity but should just do nothing", async () => {
+        const callback = spy();
+        const interval = new Interval(callback, Infinity, true);
+        const interval2 = new Interval(callback, 100);
+        interval2.start(Infinity);
+
+        await wait(200); // we can't wait forever so let's wait for a while at least to see if it was not started with 0
+        callback.__spy.calls.must.have.length(0);
+
+        interval.stop();
+        interval2.stop();
+    });
+
+    it("should allow Infinity but should allow instant first run", async () => {
+        const callback = spy();
+        const interval = new Interval(callback, Infinity, true, true);
+
+        await wait(200); // we can't wait forever so let's wait for a while at least to see if it was not started with 0
+        callback.__spy.calls.must.have.length(1);
 
         interval.stop();
     });

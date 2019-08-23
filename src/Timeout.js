@@ -1,3 +1,5 @@
+import validateTime from "./validateTime";
+
 /**
  * Replacement class for `setTimeout`
  */
@@ -5,9 +7,10 @@ class Timeout {
     /**
      * @param {function} callback - function to be called when given time passes
      * @param {number} time - time in ms to fire the callback
-     * @param {boolean} start - start the timer
+     * @param {boolean} [start] - start the timer
      */
     constructor(callback, time, start) {
+        validateTime(time);
         this._cb = callback.bind(null);
         this._time = time;
         this._timerId = null;
@@ -24,10 +27,13 @@ class Timeout {
      */
     start(newTime) {
         if (newTime != null) {
+            validateTime(newTime);
             this._time = newTime;
         }
         this.stop();
-        this._timerId = setTimeout(this._cb, this._time);
+        if (this._time !== Infinity) {
+            this._timerId = setTimeout(this._cb, this._time);
+        }
         return this;
     }
 
@@ -45,4 +51,4 @@ class Timeout {
     }
 }
 
-module.exports = Timeout;
+export default Timeout;

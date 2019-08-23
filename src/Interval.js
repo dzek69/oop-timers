@@ -1,3 +1,5 @@
+import validateTime from "./validateTime";
+
 /**
  * Replacement class for `setInterval`
  */
@@ -9,6 +11,7 @@ class Interval {
      * @param {boolean} [instantFirstRun] - run the callback instantly
      */
     constructor(callback, time, start, instantFirstRun) {
+        validateTime(time);
         this._cb = callback.bind(null);
         this._time = time;
         this._timerId = null;
@@ -27,13 +30,16 @@ class Interval {
      */
     start(newTime, instantFirstRun) {
         if (newTime != null) {
+            validateTime(newTime);
             this._time = newTime;
         }
         if (instantFirstRun != null) {
             this._instantFirstRun = instantFirstRun;
         }
         this.stop();
-        this._timerId = setInterval(this._cb, this._time);
+        if (this._time !== Infinity) {
+            this._timerId = setInterval(this._cb, this._time);
+        }
         if (this._instantFirstRun) {
             this._cb();
         }

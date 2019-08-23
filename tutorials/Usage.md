@@ -1,14 +1,14 @@
 # Importing
 
-## EcmaScript 6+
+## ESModules
 
 ```javascript
-const { Interval } = require("oop-timers");
+import { Interval } from "oop-timers";
 // or (for easier tree shaking if needed):
-const Interval = require("oop-timers/src/Interval");
+import { Interval } from "oop-timers/src/Interval";
 ```
 
-## EcmaScript 5
+## CommonJS
 ```javascript
 const { Interval } = require("oop-timers/dist");
 
@@ -20,7 +20,7 @@ Replace `Interval` with `Timeout` if you need to import timeout type timer.
 
 # Real-world examples
 
-These may not be the perfect examples. Im no good at examples. Feel free to submit PR with better examples :)
+These may not be the perfect examples. I'm no good at examples. Feel free to submit PR with better examples :)
 
 ## Timeout
 
@@ -116,7 +116,8 @@ start on constructing.
 
 # Additional feature of Interval
 
-One thing missing in native interval is an option to call the callback instantly, then wait specified time and call the callback and wait and call and wait ...
+One thing missing in native interval is an option to call the callback instantly, then wait specified time and call the
+callback and wait and call and wait ...
 It's not uncommon to find a code like that:
 
 ```javascript
