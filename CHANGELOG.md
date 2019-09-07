@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [UNRELEASED]
 (nothing yet)
 
+## [2.0.1] - 2018-09-07
+### Fixed
+- esmodule syntax not applied everywhere
+
 ## [2.0.0] - 2018-08-23
 ### Fixed
 - handling of incorrect time values

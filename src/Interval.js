@@ -60,4 +60,4 @@ class Interval {
     }
 }
 
-module.exports = Interval;
+export default Interval;

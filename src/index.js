@@ -1,7 +1,7 @@
-const Timeout = require("./Timeout");
-const Interval = require("./Interval");
+import Timeout from "./Timeout";
+import Interval from "./Interval";
 
-module.exports = {
+export {
     Timeout,
     Interval,
 };
