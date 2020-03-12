@@ -1,4 +1,4 @@
-import validateTime from "./validateTime";
+import validateTime from "./validateTime.mjs";
 
 /**
  * Replacement class for `setTimeout`

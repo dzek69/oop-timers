@@ -1,6 +1,6 @@
-import Interval from "./Interval";
+import Interval from "./Interval.mjs";
 
-import { spy, wait } from "../test/utils";
+import { spy, wait } from "../test/utils.mjs";
 
 describe("Interval", () => {
     it("waits proper time before firing the callback", async () => {

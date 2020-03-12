@@ -1,8 +1,8 @@
 const spy = () => {
     const calls = [];
     const mySpy = function() {
-        arguments.context = this;
-        calls.push(arguments);
+        arguments.context = this; // eslint-disable-line no-invalid-this
+        calls.push(arguments); // eslint-disable-line prefer-rest-params
     };
     mySpy.__spy = {
         reset() {
@@ -17,6 +17,6 @@ const spy = () => {
 
 const wait = time => new Promise(resolve => setTimeout(resolve, time));
 
-module.exports = {
+export {
     spy, wait,
 };

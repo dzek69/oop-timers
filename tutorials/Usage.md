@@ -4,16 +4,11 @@
 
 ```javascript
 import { Interval } from "oop-timers";
-// or (for easier tree shaking if needed):
-import { Interval } from "oop-timers/src/Interval";
 ```
 
 ## CommonJS
 ```javascript
-const { Interval } = require("oop-timers/dist");
-
-// or (for easier tree shaking if needed):
-const Interval = require("oop-timers/dist/Interval");
+const { Interval } = require("oop-timers");
 ```
 
 Replace `Interval` with `Timeout` if you need to import timeout type timer.
@@ -64,7 +59,7 @@ const onTick = () => {
     left--;
     updateView(left);
     if (left === 0) {
-        clearInterval(interval);        
+        clearInterval(interval);
     }
 };
 
@@ -90,7 +85,7 @@ const onTick = () => {
     left--;
     updateView(left);
     if (left === 0) {
-        clearInterval(interval);        
+        clearInterval(interval);
     }
 };
 
@@ -160,7 +155,7 @@ timer.start(undefined, true);
 // callback will be instantly called then after each 1000ms
 ```
 
-New time argument is skipped when `undefined` or `null` is passed (using `undefined` is preferred). 
+New time argument is skipped when `undefined` or `null` is passed (using `undefined` is preferred).
 
 # Methods and arguments list
 

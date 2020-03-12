@@ -1,6 +1,6 @@
-import Timeout from "./Timeout";
+import Timeout from "./Timeout.mjs";
 
-import { spy, wait } from "../test/utils";
+import { spy, wait } from "../test/utils.mjs";
 
 describe("Timeout", () => {
     it("waits proper time before firing the callback", async () => {
