@@ -1,43 +1,52 @@
-import Timeout from "./Timeout.mjs";
+import Timeout from "./Timeout";
 
-import { spy, wait } from "../test/utils.mjs";
+import { spy, wait } from "./__test/utils";
 
 describe("Timeout", () => {
     it("waits proper time before firing the callback", async () => {
         const callback = spy();
         const timer = new Timeout(callback, 300);
+        timer.started.must.be.false();
         timer.start();
 
+        timer.started.must.be.true();
         await wait(200);
         callback.__spy.calls.must.have.length(0);
+        timer.started.must.be.true();
         await wait(50);
         callback.__spy.calls.must.have.length(0);
+        timer.started.must.be.true();
         await wait(50);
         callback.__spy.calls.must.have.length(1);
+        timer.started.must.be.false();
     });
 
     it("doesn't fire the callback by defualt", async () => {
         const callback = spy();
-        new Timeout(callback, 250);
+        const timer = new Timeout(callback, 250);
 
+        timer.started.must.be.false();
         await wait(200);
         callback.__spy.calls.must.have.length(0);
         await wait(50);
         callback.__spy.calls.must.have.length(0);
         await wait(50);
         callback.__spy.calls.must.have.length(0);
+        timer.started.must.be.false();
     });
 
     it("allows to fire the callback on constructing", async () => {
         const callback = spy();
-        new Timeout(callback, 300, true);
+        const timer = new Timeout(callback, 300, true);
 
+        timer.started.must.be.true();
         await wait(200);
         callback.__spy.calls.must.have.length(0);
         await wait(50);
         callback.__spy.calls.must.have.length(0);
         await wait(50);
         callback.__spy.calls.must.have.length(1);
+        timer.started.must.be.false();
     });
 
     it("allows to restart the timer before callback fires", async () => {
@@ -110,12 +119,15 @@ describe("Timeout", () => {
         const timer = new Timeout(callback, 300);
         timer.start();
 
-        await wait(300);
-        callback.__spy.calls.must.have.length(1);
+        await wait(200);
+        callback.__spy.calls.must.have.length(0);
+        timer.started.must.be.true();
         timer.stop();
+        timer.started.must.be.false();
 
         await wait(600);
-        callback.__spy.calls.must.have.length(1);
+        callback.__spy.calls.must.have.length(0);
+        timer.started.must.be.false();
     });
 
     it("ignores multiple stop calls", () => {
@@ -146,38 +158,6 @@ describe("Timeout", () => {
         await wait(100);
         callback.__spy.calls.must.have.length(1);
         callback.__spy.calls[0].must.have.length(0);
-    });
-
-    describe("should crash when time isn't a number", () => {
-        const callback = spy();
-
-        it("in constructor", () => {
-            (() => {
-                new Timeout(callback, "100");
-            }).must.throw(TypeError, "Time must be a number");
-            (() => {
-                new Timeout(callback, null);
-            }).must.throw(TypeError, "Time must be a number");
-            (() => {
-                new Timeout(callback);
-            }).must.throw(TypeError, "Time must be a number");
-            (() => {
-                new Timeout(callback, [100]);
-            }).must.throw(TypeError, "Time must be a number");
-        });
-
-        it("on start method", () => {
-            const timeout = new Timeout(callback, 100);
-            (() => {
-                timeout.start("100");
-            }).must.throw(TypeError, "Time must be a number");
-            (() => {
-                timeout.start(() => {}); // null is simply ignored on `start` to match Interval behavior
-            }).must.throw(TypeError, "Time must be a number");
-            (() => {
-                timeout.start([100]);
-            }).must.throw(TypeError, "Time must be a number");
-        });
     });
 
     describe("should crash when time is lower than zero", () => {

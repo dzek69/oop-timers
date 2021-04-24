@@ -1,15 +1,21 @@
-import validateTime from "./validateTime.mjs";
+import validateTime from "./validateTime.js";
 
 /**
  * Replacement class for `setTimeout`
  */
 class Timeout {
+    private readonly _cb: OmitThisParameter<() => void>;
+
+    private _time: number;
+
+    private _timerId: ReturnType<typeof setTimeout> | null;
+
     /**
      * @param {function} callback - function to be called when given time passes
      * @param {number} time - time in ms to fire the callback
      * @param {boolean} [start] - start the timer
      */
-    constructor(callback, time, start) {
+    public constructor(callback: () => void, time: number, start: boolean = false) {
         validateTime(time);
         this._cb = callback.bind(null);
         this._time = time;
@@ -23,16 +29,19 @@ class Timeout {
      * Starts or restarts the timer
      *
      * @param {number} [newTime] - override time to call the callback
-     * @returns {Timeout} - current instance
+     * @returns {Timeout} current instance
      */
-    start(newTime) {
+    public start(newTime?: number) {
         if (newTime != null) {
             validateTime(newTime);
             this._time = newTime;
         }
         this.stop();
         if (this._time !== Infinity) {
-            this._timerId = setTimeout(this._cb, this._time);
+            this._timerId = setTimeout(() => {
+                this._cb();
+                this.stop();
+            }, this._time);
         }
         return this;
     }
@@ -40,14 +49,18 @@ class Timeout {
     /**
      * Stops the timer, so callback won't be fired
      *
-     * @returns {Timeout} - current instance
+     * @returns {Timeout} current instance
      */
-    stop() {
+    public stop() {
         if (this._timerId) {
             clearTimeout(this._timerId);
             this._timerId = null;
         }
         return this;
+    }
+
+    public get started() {
+        return this._timerId != null;
     }
 }
 

@@ -1,7 +1,9 @@
 const spy = () => {
-    const calls = [];
+    const calls: unknown[] = [];
     const mySpy = function() {
-        arguments.context = this; // eslint-disable-line no-invalid-this
+        // @ts-expect-error Whatever, TS :)
+        // eslint-disable-next-line @typescript-eslint/no-invalid-this,@typescript-eslint/no-unsafe-assignment
+        arguments.context = this;
         calls.push(arguments); // eslint-disable-line prefer-rest-params
     };
     mySpy.__spy = {
@@ -15,7 +17,9 @@ const spy = () => {
     return mySpy;
 };
 
-const wait = time => new Promise(resolve => setTimeout(resolve, time));
+const wait = (time: number) => new Promise(resolve => {
+    setTimeout(resolve, time);
+});
 
 export {
     spy, wait,

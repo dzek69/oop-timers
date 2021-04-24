@@ -1,21 +1,27 @@
-import Interval from "./Interval.mjs";
+import Interval from "./Interval";
 
-import { spy, wait } from "../test/utils.mjs";
+import { spy, wait } from "./__test/utils";
 
 describe("Interval", () => {
     it("waits proper time before firing the callback", async () => {
         const callback = spy();
         const interval = new Interval(callback, 300);
+        interval.started.must.be.false();
         interval.start();
 
+        interval.started.must.be.true();
         await wait(200);
         callback.__spy.calls.must.have.length(0);
+        interval.started.must.be.true();
         await wait(50);
         callback.__spy.calls.must.have.length(0);
+        interval.started.must.be.true();
         await wait(50);
         callback.__spy.calls.must.have.length(1);
+        interval.started.must.be.true();
 
         interval.stop();
+        interval.started.must.be.false();
     });
 
     it("calls the callback every specified interval", async () => {
@@ -23,28 +29,38 @@ describe("Interval", () => {
         const interval = new Interval(callback, 100);
         interval.start();
 
+        interval.started.must.be.true();
         await wait(50);
         callback.__spy.calls.must.have.length(0);
+        interval.started.must.be.true();
         await wait(50);
         callback.__spy.calls.must.have.length(1);
+        interval.started.must.be.true();
         await wait(100);
         callback.__spy.calls.must.have.length(2);
+        interval.started.must.be.true();
         await wait(100);
         callback.__spy.calls.must.have.length(3);
+        interval.started.must.be.true();
 
         interval.stop();
+        interval.started.must.be.false();
     });
 
     it("doesn't start the interval by defualt", async () => {
         const callback = spy();
-        new Interval(callback, 100);
+        const interval = new Interval(callback, 100);
+        interval.started.must.be.false();
 
         await wait(200);
         callback.__spy.calls.must.have.length(0);
+        interval.started.must.be.false();
         await wait(50);
         callback.__spy.calls.must.have.length(0);
+        interval.started.must.be.false();
         await wait(50);
         callback.__spy.calls.must.have.length(0);
+        interval.started.must.be.false();
     });
 
     it("allows to start the interval on constructing", async () => {
@@ -205,11 +221,17 @@ describe("Interval", () => {
     it("allows to stop the interval", async () => {
         const callback = spy();
         const interval = new Interval(callback, 300);
+        interval.started.must.be.false();
+
         interval.start();
+        interval.started.must.be.true();
+
         interval.stop();
+        interval.started.must.be.false();
 
         await wait(600);
         callback.__spy.calls.must.have.length(0);
+        interval.started.must.be.false();
     });
 
     it("ignores multiple stop calls", () => {
@@ -244,38 +266,6 @@ describe("Interval", () => {
         callback.__spy.calls[0].must.have.length(0);
 
         interval.stop();
-    });
-
-    describe("should crash when time isn't a number", () => {
-        const callback = spy();
-
-        it("in constructor", () => {
-            (() => {
-                new Interval(callback, "100");
-            }).must.throw(TypeError, "Time must be a number");
-            (() => {
-                new Interval(callback, null);
-            }).must.throw(TypeError, "Time must be a number");
-            (() => {
-                new Interval(callback);
-            }).must.throw(TypeError, "Time must be a number");
-            (() => {
-                new Interval(callback, [100]);
-            }).must.throw(TypeError, "Time must be a number");
-        });
-
-        it("on start method", () => {
-            const interval = new Interval(callback, 100);
-            (() => {
-                interval.start("100");
-            }).must.throw(TypeError, "Time must be a number");
-            (() => {
-                interval.start(() => {}); // null is simply ignored on `start` to match Interval behavior
-            }).must.throw(TypeError, "Time must be a number");
-            (() => {
-                interval.start([100]);
-            }).must.throw(TypeError, "Time must be a number");
-        });
     });
 
     describe("should crash when time is lower than zero", () => {

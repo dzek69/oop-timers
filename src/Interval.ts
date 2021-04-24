@@ -1,16 +1,24 @@
-import validateTime from "./validateTime.mjs";
+import validateTime from "./validateTime.js";
 
 /**
  * Replacement class for `setInterval`
  */
 class Interval {
+    private readonly _cb: OmitThisParameter<() => void>;
+
+    private _time: number;
+
+    private _timerId: ReturnType<typeof setInterval> | null;
+
+    private _instantFirstRun: boolean;
+
     /**
      * @param {function} callback - function to be called when given time passes
      * @param {number} time - time in ms to fire the callback
      * @param {boolean} [start] - start the interval
      * @param {boolean} [instantFirstRun] - run the callback instantly
      */
-    constructor(callback, time, start, instantFirstRun) {
+    public constructor(callback: () => void, time: number, start: boolean = false, instantFirstRun: boolean = false) {
         validateTime(time);
         this._cb = callback.bind(null);
         this._time = time;
@@ -26,9 +34,9 @@ class Interval {
      *
      * @param {number} [newTime] - override time to call the callback
      * @param {boolean} [instantFirstRun] - run the callback instantly
-     * @returns {Interval} - current instance
+     * @returns {Interval} current instance
      */
-    start(newTime, instantFirstRun) {
+    public start(newTime?: number, instantFirstRun?: boolean) {
         if (newTime != null) {
             validateTime(newTime);
             this._time = newTime;
@@ -49,14 +57,18 @@ class Interval {
     /**
      * Stops the interval, so callback won't be fired anymore
      *
-     * @returns {Interval} - current instance
+     * @returns {Interval} current instance
      */
-    stop() {
+    public stop() {
         if (this._timerId) {
             clearInterval(this._timerId);
             this._timerId = null;
         }
         return this;
+    }
+
+    public get started() {
+        return this._timerId != null;
     }
 }
 

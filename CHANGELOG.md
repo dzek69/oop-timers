@@ -6,6 +6,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [UNRELEASED]
 (nothing yet)
 
+## [4.0.0] - 2021-04-24
+### Added
+- TypeScript typings
+- `started` property that indicates if timer is started
+
+## [3.0.1] - 2020-03-13
+### Fixed
+- CommonJS compatibility
+### Changed
+- better native ESM support
+
 ## [3.0.0] - 2020-03-12
 ### Changed
 - library now works as real esmodule with commonjs fallback
