@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [UNRELEASED]
 (nothing yet)
 
+## [4.0.1] - 2021-05-16
+### Fixed
+- support for pretty new node versions with common js code
+
 ## [4.0.0] - 2021-04-24
 ### Added
 - TypeScript typings
