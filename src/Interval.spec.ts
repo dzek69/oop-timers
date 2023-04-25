@@ -1,6 +1,5 @@
-import Interval from "./Interval";
-
-import { spy, wait } from "./__test/utils";
+import Interval from "./Interval.js";
+import { spy, wait } from "./__test/utils.js";
 
 describe("Interval", () => {
     it("waits proper time before firing the callback", async () => {

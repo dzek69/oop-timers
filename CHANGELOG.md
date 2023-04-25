@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [UNRELEASED]
 (nothing yet)
 
+## [4.0.2] - 2023-04-25
+### Dev
+- dev dependencies bump
+
 ## [4.0.1] - 2021-05-16
 ### Fixed
 - support for pretty new node versions with common js code
