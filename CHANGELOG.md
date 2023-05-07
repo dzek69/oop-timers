@@ -6,11 +6,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [UNRELEASED]
 (nothing yet)
 
-## [4.0.2+]
+## [5.0.0] - 2023-05-07
+### Added
+- `startOnly` method
+- `restartOnly` method
 ### Dev
 - got rid of default exports in internal files, if you (incorrectly) required internal files previously change your `require`/`import` statements
 ### Changed
 - tutorial/readme update
+- the instance is no longer returned from `start`/`stop` methods, it was useless and possibly confusing
 
 ## [4.0.2] - 2023-04-25
 ### Dev

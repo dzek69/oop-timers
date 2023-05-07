@@ -52,6 +52,8 @@ timeout.start();
 button.addEventListener('click', () => timeout.start(2000));
 ```
 
+> Important: `startOnly` and `restartOnly` does not support changing timeout value.
+
 ## Important difference from setTimeout and setInterval
 
 A `timer.start()` method has to be run in order to start the timeout/interval, as opposed to using native

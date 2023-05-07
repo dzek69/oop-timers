@@ -20,7 +20,7 @@ describe("Timeout", () => {
         timer.started.must.be.false();
     });
 
-    it("doesn't fire the callback by defualt", async () => {
+    it("doesn't fire the callback by default", async () => {
         const callback = spy();
         const timer = new Timeout(callback, 250);
 
@@ -225,5 +225,73 @@ describe("Timeout", () => {
 
         timeout.stop();
         timeout2.stop();
+    });
+
+    it("allows to start the timer only if not started", async () => {
+        {
+            const callback = spy();
+            const timeout = new Timeout(callback, 100);
+            const r1 = timeout.startOnly();
+            await wait(50);
+            // will not restart
+            const r2 = timeout.startOnly();
+            await wait(50);
+            // should start again
+            const r3 = timeout.startOnly();
+            await wait(50);
+            const r4 = timeout.startOnly();
+            await wait(200);
+            callback.__spy.calls.length.must.be.gt(1);
+
+            r1.must.be.true();
+            r2.must.be.false();
+            r3.must.be.true();
+            r4.must.be.false();
+        }
+
+        {
+            const callback = spy();
+            const timeout = new Timeout(callback, 100);
+            // it will keep restarting, so it will call the callback only once
+            timeout.start();
+            await wait(50);
+            timeout.start();
+            await wait(50);
+            timeout.start();
+            await wait(50);
+            timeout.start();
+            await wait(200);
+            callback.__spy.calls.length.must.be.equal(1);
+        }
+    });
+
+    it("allows to restart the timer only if alredy started", async () => {
+        const callback = spy();
+        const timeout = new Timeout(callback, 100);
+        const r1 = timeout.restartOnly();
+        r1.must.be.false();
+
+        await wait(200);
+        callback.__spy.calls.length.must.be.equal(0);
+
+        timeout.start();
+        const r2 = timeout.restartOnly();
+        await wait(50);
+        const r3 = timeout.restartOnly();
+        await wait(50);
+        const r4 = timeout.restartOnly();
+        await wait(50);
+        const r5 = timeout.restartOnly();
+        await wait(50);
+        const r6 = timeout.restartOnly();
+        await wait(200);
+
+        r2.must.be.true();
+        r3.must.be.true();
+        r4.must.be.true();
+        r5.must.be.true();
+        r6.must.be.true();
+
+        callback.__spy.calls.length.must.equal(1);
     });
 });

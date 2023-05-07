@@ -45,13 +45,41 @@ class Interval {
             this._instantFirstRun = instantFirstRun;
         }
         this.stop();
+        this._start();
+    }
+
+    private _start() {
         if (this._time !== Infinity) {
             this._timerId = setInterval(this._cb, this._time);
         }
         if (this._instantFirstRun) {
             this._cb();
         }
-        return this;
+    }
+
+    /**
+     * Starts the interval only if it's not already started
+     * @returns {boolean} - true if newly started, false if already started
+     */
+    public startOnly() {
+        if (this._timerId !== null) {
+            return false;
+        }
+        this._start();
+        return true;
+    }
+
+    /**
+     * Restarts the interval only if it's already started
+     * @returns {boolean} - true if restarted, false if not started
+     */
+    public restartOnly() {
+        if (this._timerId === null) {
+            return false;
+        }
+        this.stop();
+        this._start();
+        return true;
     }
 
     /**
@@ -60,15 +88,14 @@ class Interval {
      * @returns {Interval} current instance
      */
     public stop() {
-        if (this._timerId) {
+        if (this._timerId !== null) {
             clearInterval(this._timerId);
             this._timerId = null;
         }
-        return this;
     }
 
     public get started() {
-        return this._timerId != null;
+        return this._timerId !== null;
     }
 }
 

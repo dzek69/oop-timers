@@ -46,7 +46,7 @@ describe("Interval", () => {
         interval.started.must.be.false();
     });
 
-    it("doesn't start the interval by defualt", async () => {
+    it("doesn't start the interval by default", async () => {
         const callback = spy();
         const interval = new Interval(callback, 100);
         interval.started.must.be.false();
@@ -344,6 +344,79 @@ describe("Interval", () => {
         await wait(200); // we can't wait forever so let's wait for a while at least to see if it was not started with 0
         callback.__spy.calls.must.have.length(1);
 
+        interval.stop();
+    });
+
+    it("allows to start the timer only if not started", async () => {
+        {
+            const callback = spy();
+            const interval = new Interval(callback, 100);
+            const r1 = interval.startOnly();
+            await wait(50);
+            // will not restart
+            const r2 = interval.startOnly();
+            await wait(50);
+            // will not restart - interval is running until it is stopped!
+            const r3 = interval.startOnly();
+            await wait(50);
+            const r4 = interval.startOnly();
+            await wait(200);
+            callback.__spy.calls.length.must.be.equal(3); // 3 calls because wait(200) is 2 intervals
+
+            r1.must.be.true();
+            r2.must.be.false();
+            r3.must.be.false();
+            r4.must.be.false();
+
+            interval.stop();
+        }
+
+        {
+            const callback = spy();
+            const interval = new Interval(callback, 100);
+            // it will keep restarting, so it will call the callback only once
+            interval.start();
+            await wait(50);
+            interval.start();
+            await wait(50);
+            interval.start();
+            await wait(50);
+            interval.start();
+            await wait(200);
+            callback.__spy.calls.length.must.be.equal(1);
+
+            interval.stop();
+        }
+    });
+
+    it("allows to restart the timer only if alredy started", async () => {
+        const callback = spy();
+        const interval = new Interval(callback, 100);
+        const r1 = interval.restartOnly();
+        r1.must.be.false();
+
+        await wait(200);
+        callback.__spy.calls.length.must.be.equal(0);
+
+        interval.start();
+        const r2 = interval.restartOnly();
+        await wait(50);
+        const r3 = interval.restartOnly();
+        await wait(50);
+        const r4 = interval.restartOnly();
+        await wait(50);
+        const r5 = interval.restartOnly();
+        await wait(50);
+        const r6 = interval.restartOnly();
+        await wait(200);
+
+        r2.must.be.true();
+        r3.must.be.true();
+        r4.must.be.true();
+        r5.must.be.true();
+        r6.must.be.true();
+
+        callback.__spy.calls.length.must.equal(1);
         interval.stop();
     });
 });
