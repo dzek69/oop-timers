@@ -1,28 +1,33 @@
 # oop-timers
 
-`oop-timers` are OOP timers (timeout and interval) for TypeScript and JavaScript. If you need to clear timeouts a lot
-and don't want to keep track of timers id and passing them to clearTimeout - this library is for you.
+This library wraps JavaScript timers (timeout and interval) in a class to provide OOP way of using them.
 
-I bet you probably have written such class few times already, copying and pasting it over various projects or rewriting
-each time. As no one published such code yet - I just did, so you don't have to.
+- 🌟 Extra features - stop repeating yourself
+- 🛠 First class TypeScript support - 100% type safe and intellisense friendly
+- 📦 No dependencies - use it anywhere
+- 🌎 Universal - exposes both ESM modules and CommonJS
+- 🛡️ Secure - fully tested and used in production
+
+## Quick example
+
+```typescript
+import { Timeout } from 'oop-timers';
+
+const timeout = new Timeout(() => console.log('Hello world!'), 1000);
+timeout.start();
+
+// Imagine UI with start and stop buttons and input for new timeout value :)
+
+stopButton.addEventListener('click', () => timeout.stop());
+startButton.addEventListener('click', () => timeout.start(Number(newTimeoutInput.value)));
+```
 
 ## Docs
 
-Documentation can be found here: [oop-timers documentation](https://dzek69.github.io/oop-timers).
-Jump directly to usage description: [oop-timers usage](https://dzek69.github.io/oop-timers/tutorial-Usage.html).
-
-## Installing
-
-`npm install oop-timers`
-
-## Features
-
-- OOP way of writing timers
-- Fully unit tested
+Documentation can be found here: [oop-timers documentation](https://ezez.dev/docs/oop-timers/latest).
 
 ## To do
 
-- Support for setImmediate?
 - Support for requestAnimationFrame?
 
 ## License

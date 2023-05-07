@@ -1,7 +1,2 @@
-import Timeout from "./Timeout.js";
-import Interval from "./Interval.js";
-
-export {
-    Timeout,
-    Interval,
-};
+export { Timeout } from "./Timeout.js";
+export { Interval } from "./Interval.js";

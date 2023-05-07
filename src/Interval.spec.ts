@@ -1,4 +1,4 @@
-import Interval from "./Interval.js";
+import { Interval } from "./Interval.js";
 import { spy, wait } from "./__test/utils.js";
 
 describe("Interval", () => {

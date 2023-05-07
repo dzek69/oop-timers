@@ -1,4 +1,4 @@
-import Timeout from "./Timeout.js";
+import { Timeout } from "./Timeout.js";
 import { spy, wait } from "./__test/utils.js";
 
 describe("Timeout", () => {

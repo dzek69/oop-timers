@@ -13,6 +13,4 @@ const validateTime = (time: number) => {
     }
 };
 
-// This is kept for compatibility reasons
-// eslint-disable-next-line import/no-default-export
-export default validateTime;
+export { validateTime };

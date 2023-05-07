@@ -1,4 +1,4 @@
-import validateTime from "./validateTime.js";
+import { validateTime } from "./validateTime.js";
 
 /**
  * Replacement class for `setTimeout`
@@ -64,6 +64,4 @@ class Timeout {
     }
 }
 
-// This is kept for compatibility reasons
-// eslint-disable-next-line import/no-default-export
-export default Timeout;
+export { Timeout };

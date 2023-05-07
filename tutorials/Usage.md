@@ -1,106 +1,58 @@
-# Importing
+## When to use
 
-## ESModules
+OOP style timers are useful when you need to start, stop & restart the timer in multiple places. You don't have to
+juggle ids, just saving instance of a timer is enough.
 
-```javascript
-import { Interval } from "oop-timers";
+If you need to start a timer, and you never care about it anymore - use native `setTimeout`.
+
+## Examples
+
+> This library is written with TypeScript and nicely documented. IDE suggestions should be enough to understand it.
+>
+> So if you don't like reading here is a little tl;dr warning: `start()` method for backwards compatibility actually
+> starts or restarts the timer if already running. `restartOnly()` method restarts the timer only if running.
+> `startOnly()` won't restart the timer if already running. None of the methods will throw, call them anytime.
+
+Few examples of what you can do with timers:
+
+### Start a timer
+
+```typescript
+const timeout = new Timeout(() => console.log('Hello world!'), 1000);
+button.addEventListener('click', () => timeout.startOnly());
 ```
 
-## CommonJS
-```javascript
-const { Interval } = require("oop-timers");
+### Stop a timer
+```typescript
+const timeout = new Timeout(() => console.log('Hello world!'), 1000);
+timeout.start();
+button.addEventListener('click', () => timeout.stop());
 ```
 
-Replace `Interval` with `Timeout` if you need to import timeout type timer.
+### Restart a timer
 
-# Real-world examples
-
-These may not be the perfect examples. I'm no good at examples. Feel free to submit PR with better examples :)
-
-## Timeout
-
-Imagine an Countdown timer app, where there is a Play button and Stop button. When timer is started we will replace Play button icon with icon representing restart action. Pressing it should restart the timer.
-
-### "Classic" code example
-
-```javascript
-let timeout;
-const startTimeout = () => {
-    if (timeout) {
-        clearTimeout(timeout);
-    }
-    timeout = setTimeout(onTimeEnd, 15 * 60 * 1000);
-};
-
-playButton.on("click", startTimeout);
-stopButton.on("click", () => clearTimeout(timeout));
+```typescript
+const timeout = new Timeout(() => console.log('Hello world!'), 1000);
+timeout.start();
+button.addEventListener('click', () => timeout.restartOnly());
 ```
 
-### `oop-timers` code example:
-```javascript
-const { Timeout } = require("oop-timers");
-const timer = new Timeout(onTimeEnd, 15 * 60 * 1000);
+### Start or restart if already running
 
-playButton.on("click", () => timer.start());
-stopButton.on("click", timer.stop);
+```typescript
+const timeout = new Timeout(() => console.log('Hello world!'), 1000);
+button.addEventListener('click', () => timeout.start());
 ```
 
-## Interval
+### Change timeout value and (re)start
 
-We want to update the previous app to see how many seconds are left. Time to switch to Interval.
-
-### "Classic" code example
-
-```javascript
-let interval;
-let left;
-
-const onTick = () => {
-    left--;
-    updateView(left);
-    if (left === 0) {
-        clearInterval(interval);
-    }
-};
-
-const startInterval = () => {
-    if (interval) {
-        clearInterval(interval);
-    }
-    left = 15 * 60;
-    interval = setInterval(onTick, 1000);
-};
-
-playButton.on("click", startInterval);
-stopButton.on("click", () => clearInterval(interval));
+```typescript
+const timeout = new Timeout(() => console.log('Hello world!'), 1000);
+timeout.start();
+button.addEventListener('click', () => timeout.start(2000));
 ```
 
-### `oop-timers` code example:
-```javascript
-const { Interval } = require("oop-timers");
-
-let left;
-
-const onTick = () => {
-    left--;
-    updateView(left);
-    if (left === 0) {
-        clearInterval(interval);
-    }
-};
-
-const timer = new Interval(onTick, 1000);
-
-const startInterval = () => {
-    left = 15 * 60;
-    timer.start();
-}
-
-playButton.on("click", startInterval);
-stopButton.on("click", timer.stop);
-```
-
-# Important difference from setTimeout and setInterval
+## Important difference from setTimeout and setInterval
 
 A `timer.start()` method has to be run in order to start the timeout/interval, as opposed to using native
 `setTimeout`/`setInterval`. This however can be changed with 3rd constructor argument, which defines if timer should
@@ -109,60 +61,46 @@ start on constructing.
 - `new Timeout(callback, 1000, true)`
 - `new Interval(callback, 1000, true)`
 
-# Additional feature of Interval
+## Interval first call
 
-One thing missing in native interval is an option to call the callback instantly, then wait specified time and call the
-callback and wait and call and wait ...
-It's not uncommon to find a code like that:
+Native interval calls the callback after given interval. Often you want to call the callback immediately and instead of
 
-```javascript
-setInterval(checkForNotification, 5000);
-checkForNotification();
+```typescript
+setInterval(() => console.log("hi"), 1000);
 ```
 
-With `oop-timers` you can use 4th constructor argument:
-```javascript
-new Interval(checkForNotification, 5000, true, true);
+You have to write:
+
+```typescript
+const sayHi = () => console.log("hi");
+setInterval(sayHi, 1000);
+sayHi();
 ```
 
-3rd argument can still be false. Your callback will be instantly called on start and each restart.
+`oop-timers` has solution for that, a 4th parameter in constructor, which tells the timer to call the callback
+immediately on (re)start.
 
-# Additional feature when restarting the timers
+```typescript
+// mind the 3rd parameter too, see previous section
+const interval = new Interval(() => console.log("hi"), 1000, false, true);
 
-Both `Timeout` and `Interval` supports defining new time when (re)starting the timer.
-
-```javascript
-let interval = 1000;
-const increaseInterval = () => { interval -= 100; return interval; }
-const decreaseInterval = () => { interval -= 100; return interval; }
-
-const timer = new Interval(tick, interval, true);
-
-plusButton.on("click", () => timer.start(increaseInterval()))
-minusButton.on("click", () => timer.start(decreaseInterval()))
+button.addEventListener('click', () => interval.start()); // will immediately print "hi" and then every 1000ms
 ```
 
-New time will be stored so next time you stop and start the timer without argument - last used time will be used for the timer.
+## Check if timer is running
 
-# Additional feature of Interval when restarting the timer
-
-You can also override (this will be stored too) the `call instantly on (re)start` option when calling `start` method:
-
-```javascript
-const timer = new Interval(tick, 1000, true, false);
-// timer started without instant call
-timer.start(undefined, true);
-// callback will be instantly called then after each 1000ms
+```typescript
+const timeout = new Timeout(() => console.log('Hello world!'), 1000);
+timeout.start();
+console.log(timeout.started); // true
 ```
 
-New time argument is skipped when `undefined` or `null` is passed (using `undefined` is preferred).
+## Methods and arguments list
 
-# Methods and arguments list
-
-## Timeout
+### Timeout
 
 See {@link Timeout}
 
-## Interval
+### Interval
 
 See {@link Interval}
