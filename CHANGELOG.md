@@ -4,6 +4,9 @@ The format is based on [EZEZ Changelog](https://ezez.dev/changelog/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [UNRELEASED]
+- (nothing yet)
+
+## [5.1.0] - 2024-03-31
 ### Added
 - `timeLeft` property
 ### Changed
@@ -11,6 +14,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - `startOnly` methods supports updating instant first run
 ### Fixed
 - JSDoc is invalid about return types
+### Dev
+- big dev deps update
 
 ## [5.0.0] - 2023-05-07
 ### Added
