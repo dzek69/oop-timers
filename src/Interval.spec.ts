@@ -419,4 +419,206 @@ describe("Interval", () => {
         callback.__spy.calls.length.must.equal(1);
         interval.stop();
     });
+
+    it("allows to change interval while restarting-only the timer", async () => {
+        const callback = spy();
+        const interval = new Interval(callback, 100);
+        interval.start();
+
+        await wait(50);
+        callback.__spy.calls.must.have.length(0);
+        await wait(50);
+        callback.__spy.calls.must.have.length(1);
+        const restarted = interval.restartOnly(200);
+        restarted.must.be.true();
+
+        callback.__spy.reset();
+
+        await wait(150);
+        callback.__spy.calls.must.have.length(0);
+        await wait(50);
+        callback.__spy.calls.must.have.length(1);
+
+        interval.stop();
+    });
+
+    it("allows to change instant first run when restarting-only", async () => {
+        const callback = spy();
+        const interval = new Interval(callback, 100);
+        interval.start();
+        await wait(10);
+
+        callback.__spy.calls.must.have.length(0);
+        interval.restartOnly(undefined, true);
+        callback.__spy.calls.must.have.length(1);
+        interval.restartOnly(undefined, true);
+        callback.__spy.calls.must.have.length(2);
+        interval.restartOnly(undefined, false);
+        callback.__spy.calls.must.have.length(2);
+        interval.restartOnly(undefined, false);
+        callback.__spy.calls.must.have.length(2);
+
+        interval.stop();
+    });
+
+    it("allows to change instant first run when starting-only", async () => {
+        const callback = spy();
+        const interval = new Interval(callback, 100, false, false);
+        callback.__spy.calls.must.have.length(0);
+
+        interval.startOnly(true);
+        callback.__spy.calls.must.have.length(1);
+
+        interval.stop();
+        interval.startOnly(false);
+        callback.__spy.calls.must.have.length(1);
+
+        interval.stop();
+        interval.startOnly(true);
+        callback.__spy.calls.must.have.length(2);
+
+        interval.startOnly(false);
+        interval.stop();
+        interval.start();
+        callback.__spy.calls.must.have.length(2);
+
+        interval.stop();
+    });
+
+    describe("has a function to change time", () => {
+        it("that works when timer is started ", async () => {
+            const callback = spy();
+            const interval = new Interval(callback, 100);
+            interval.start();
+            interval.changeTime(150);
+
+            await wait(100);
+            callback.__spy.calls.must.have.length(0);
+
+            await wait(50);
+            callback.__spy.calls.must.have.length(1);
+
+            await wait(150);
+            callback.__spy.calls.must.have.length(2);
+
+            interval.stop();
+        });
+
+        it("that restarts the timer to change time", async () => {
+            const callback = spy();
+            const interval = new Interval(callback, 100);
+            interval.start();
+
+            interval.changeTime(101);
+            await wait(50);
+            callback.__spy.calls.must.have.length(0);
+            interval.changeTime(100);
+            await wait(50);
+            callback.__spy.calls.must.have.length(0);
+            interval.changeTime(101);
+            await wait(50);
+            callback.__spy.calls.must.have.length(0);
+            interval.changeTime(100);
+            await wait(50);
+            callback.__spy.calls.must.have.length(0);
+
+            await wait(100);
+            callback.__spy.calls.must.have.length(1);
+
+            interval.stop();
+        });
+
+        it("that works when timer is stopped", async () => {
+            const callback = spy();
+            const interval = new Interval(callback, 100);
+            interval.stop();
+            interval.changeTime(150);
+            interval.start();
+
+            await wait(100);
+            callback.__spy.calls.must.have.length(0);
+
+            await wait(50);
+            callback.__spy.calls.must.have.length(1);
+
+            interval.stop();
+        });
+
+        it("does not start the time if stopped", async () => {
+            const callback = spy();
+            const interval = new Interval(callback, 100);
+            interval.stop();
+            interval.changeTime(150);
+
+            interval.started.must.be.false();
+            await wait(200);
+            callback.__spy.calls.must.have.length(0);
+
+            interval.stop();
+        });
+
+        it("does not restart the timer if the same exact time is given", async () => {
+            const callback = spy();
+            const interval = new Interval(callback, 100);
+            interval.start();
+
+            interval.changeTime(100);
+            await wait(50);
+            callback.__spy.calls.must.have.length(0);
+
+            interval.changeTime(100);
+            await wait(50);
+            callback.__spy.calls.must.have.length(1);
+
+            interval.stop();
+        });
+    });
+
+    describe("has timeLeft property", () => {
+        it("that returns time to next invocation", async () => {
+            let resolve: ((v: unknown) => void) = () => {};
+            const p = new Promise((r) => {
+                resolve = r;
+            });
+
+            const callback = spy(async () => {
+                // eslint-disable-next-line @typescript-eslint/no-use-before-define
+                const i = interval;
+
+                await wait(25);
+                const time3 = i.timeLeft;
+                i.timeLeft.must.be.between(0, 75);
+
+                await wait(25);
+                const time4 = i.timeLeft;
+                i.timeLeft.must.be.between(0, 50);
+
+                time4.must.be.lt(time3);
+
+                i.stop();
+                resolve(null);
+            });
+
+            const interval = new Interval(callback, 100);
+            interval.start();
+
+            await wait(25);
+            const time1 = interval.timeLeft;
+            interval.timeLeft.must.be.between(0, 75);
+
+            await wait(25);
+            const time2 = interval.timeLeft;
+            interval.timeLeft.must.be.between(0, 50);
+
+            time2.must.be.lt(time1);
+
+            await p;
+        });
+
+        it("that returns zero if timer is not started", async () => {
+            const callback = spy();
+            const interval = new Interval(callback, 100);
+            interval.timeLeft.must.equal(0);
+        });
+    });
 });

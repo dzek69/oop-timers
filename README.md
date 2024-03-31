@@ -4,9 +4,9 @@ This library wraps JavaScript timers (timeout and interval) in a class to provid
 
 - 🌟 Extra features - stop repeating yourself
 - 🛠 First class TypeScript support - 100% type safe and intellisense friendly
-- 📦 No dependencies - use it anywhere
+- 📦 No dependencies - it's small and can be used anywhere
 - 🌎 Universal - exposes both ESM modules and CommonJS
-- 🛡️ Secure - fully tested and used in production
+- 🛡️ Safe - fully tested and used in production
 
 ## Quick example
 

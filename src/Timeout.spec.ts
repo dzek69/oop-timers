@@ -294,4 +294,144 @@ describe("Timeout", () => {
 
         callback.__spy.calls.length.must.equal(1);
     });
+
+    it("allows to change the time while restarting-only the timer", async () => {
+        const callback = spy();
+        const timeout = new Timeout(callback, 100);
+        timeout.start();
+
+        await wait(100);
+        callback.__spy.calls.must.have.length(1);
+        timeout.restartOnly(50);
+
+        await wait(100);
+        callback.__spy.calls.must.have.length(1);
+        timeout.start();
+
+        await wait(50);
+        callback.__spy.calls.must.have.length(2);
+        timeout.restartOnly(50);
+    });
+
+    it("allows to change the time while restarting-only, remembering new time if timer is stopped", async () => {
+        const callback = spy();
+        const timeout = new Timeout(callback, 100);
+        timeout.stop();
+
+        await wait(100);
+        callback.__spy.calls.must.have.length(0);
+        timeout.restartOnly(50);
+
+        await wait(100);
+        callback.__spy.calls.must.have.length(0);
+        timeout.start();
+
+        await wait(50);
+        callback.__spy.calls.must.have.length(1);
+    });
+
+    describe("has a function to change time", () => {
+        it("that works when timer is started ", async () => {
+            const callback = spy();
+            const timeout = new Timeout(callback, 100);
+            timeout.start();
+            timeout.changeTime(150);
+
+            await wait(100);
+            callback.__spy.calls.must.have.length(0);
+
+            await wait(50);
+            callback.__spy.calls.must.have.length(1);
+        });
+
+        it("that restarts the timer to change time", async () => {
+            const callback = spy();
+            const timeout = new Timeout(callback, 100);
+            timeout.start();
+
+            timeout.changeTime(101);
+            await wait(50);
+            callback.__spy.calls.must.have.length(0);
+            timeout.changeTime(100);
+            await wait(50);
+            callback.__spy.calls.must.have.length(0);
+            timeout.changeTime(101);
+            await wait(50);
+            callback.__spy.calls.must.have.length(0);
+            timeout.changeTime(100);
+            await wait(50);
+            callback.__spy.calls.must.have.length(0);
+
+            await wait(100);
+            callback.__spy.calls.must.have.length(1);
+        });
+
+        it("that works when timer is stopped", async () => {
+            const callback = spy();
+            const timeout = new Timeout(callback, 100);
+            timeout.stop();
+            timeout.changeTime(150);
+            timeout.start();
+
+            await wait(100);
+            callback.__spy.calls.must.have.length(0);
+
+            await wait(50);
+            callback.__spy.calls.must.have.length(1);
+        });
+
+        it("does not start the time if stopped", async () => {
+            const callback = spy();
+            const timeout = new Timeout(callback, 100);
+            timeout.stop();
+            timeout.changeTime(150);
+
+            timeout.started.must.be.false();
+            await wait(200);
+            callback.__spy.calls.must.have.length(0);
+        });
+
+        it("does not restart the timer if the same exact time is given", async () => {
+            const callback = spy();
+            const timeout = new Timeout(callback, 100);
+            timeout.start();
+
+            timeout.changeTime(100);
+            await wait(50);
+            callback.__spy.calls.must.have.length(0);
+
+            timeout.changeTime(100);
+            await wait(50);
+            callback.__spy.calls.must.have.length(1);
+        });
+    });
+
+    describe("has timeLeft property", () => {
+        it("that returns time to next invocation", async () => {
+            const callback = spy();
+            const timeout = new Timeout(callback, 100);
+            timeout.start();
+
+            await wait(25);
+            const time1 = timeout.timeLeft;
+            timeout.timeLeft.must.be.between(0, 75);
+
+            await wait(25);
+            const time2 = timeout.timeLeft;
+            timeout.timeLeft.must.be.between(0, 50);
+
+            time2.must.be.lt(time1);
+
+            await wait(50);
+            timeout.timeLeft.must.equal(0);
+            await wait(50);
+            timeout.timeLeft.must.equal(0);
+        });
+
+        it("that returns zero if timer is not started", async () => {
+            const callback = spy();
+            const timeout = new Timeout(callback, 100);
+            timeout.timeLeft.must.equal(0);
+        });
+    });
 });
