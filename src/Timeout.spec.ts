@@ -163,15 +163,9 @@ describe("Timeout", () => {
         const callback = spy();
 
         it("in constructor", () => {
-            (() => {
-                new Timeout(callback, -1);
-            }).must.throw(TypeError, "Time must be a positive number");
-            (() => {
-                new Timeout(callback, -600);
-            }).must.throw(TypeError, "Time must be a positive number");
-            (() => {
-                new Timeout(callback, 0);
-            }).must.not.throw();
+            (() => new Timeout(callback, -1)).must.throw(TypeError, "Time must be a positive number");
+            (() => new Timeout(callback, -600)).must.throw(TypeError, "Time must be a positive number");
+            (() => new Timeout(callback, 0)).must.not.throw();
         });
 
         it("on start method", () => {
@@ -194,12 +188,10 @@ describe("Timeout", () => {
         const MAX_VALUE = 2147483647;
 
         it("in constructor", () => {
-            (() => {
-                new Timeout(callback, MAX_VALUE + 1);
-            }).must.throw(TypeError, "Time must not be greater than 2147483647");
-            (() => {
-                new Timeout(callback, MAX_VALUE);
-            }).must.not.throw();
+            (() => new Timeout(callback, MAX_VALUE + 1)).must.throw(
+                TypeError, "Time must not be greater than 2147483647",
+            );
+            (() => new Timeout(callback, MAX_VALUE)).must.not.throw();
         });
 
         it("on start method", () => {

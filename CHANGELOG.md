@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [UNRELEASED]
 - (nothing yet)
 
+## [5.1.1] - 2024-03-31
+### Changed
+- Changelog added to the docs
+### Dev
+- dev deps update
+
 ## [5.1.0] - 2024-03-31
 ### Added
 - `timeLeft` property

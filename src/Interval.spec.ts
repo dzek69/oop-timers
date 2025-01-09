@@ -271,15 +271,9 @@ describe("Interval", () => {
         const callback = spy();
 
         it("in constructor", () => {
-            (() => {
-                new Interval(callback, -1);
-            }).must.throw(TypeError, "Time must be a positive number");
-            (() => {
-                new Interval(callback, -600);
-            }).must.throw(TypeError, "Time must be a positive number");
-            (() => {
-                new Interval(callback, 0);
-            }).must.not.throw();
+            (() => new Interval(callback, -1)).must.throw(TypeError, "Time must be a positive number");
+            (() => new Interval(callback, -600)).must.throw(TypeError, "Time must be a positive number");
+            (() => new Interval(callback, 0)).must.not.throw();
         });
 
         it("on start method", () => {
@@ -303,9 +297,9 @@ describe("Interval", () => {
         const MAX_VALUE = 2147483647;
 
         it("in constructor", () => {
-            (() => {
-                new Interval(callback, MAX_VALUE + 1);
-            }).must.throw(TypeError, "Time must not be greater than 2147483647");
+            (() => new Interval(callback, MAX_VALUE + 1)).must.throw(
+                TypeError, "Time must not be greater than 2147483647",
+            );
             (() => {
                 const interval = new Interval(callback, MAX_VALUE);
                 interval.stop();
