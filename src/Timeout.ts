@@ -6,7 +6,7 @@ type Nil = null | undefined;
  * Replacement class for `setTimeout`
  */
 class Timeout {
-    private readonly _cb: OmitThisParameter<() => void>;
+    private _cb: OmitThisParameter<() => void>;
 
     private _time: number;
 
@@ -72,6 +72,16 @@ class Timeout {
         }
         this._updateTime(newTime);
         this.restartOnly(newTime);
+    }
+
+    /**
+     * Changes the callback function without resetting the timer.
+     *
+     * @param callback - new function to be called when timer fires
+     * @returns this instance for method chaining
+     */
+    public changeCallback(callback: () => void) {
+        this._cb = callback.bind(null);
     }
 
     /**

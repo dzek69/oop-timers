@@ -615,4 +615,43 @@ describe("Interval", () => {
             interval.timeLeft.must.equal(0);
         });
     });
+
+    describe("has changeCallback function", () => {
+        it("that changes callback without resetting the interval", async () => {
+            const callback1 = spy();
+            const callback2 = spy();
+            const interval = new Interval(callback1, 100);
+
+            interval.start();
+            await wait(50);
+            callback1.__spy.calls.must.have.length(0);
+            callback2.__spy.calls.must.have.length(0);
+
+            interval.changeCallback(callback2);
+
+            await wait(50);
+            callback1.__spy.calls.must.have.length(0);
+            callback2.__spy.calls.must.have.length(1);
+            await wait(100);
+            callback1.__spy.calls.must.have.length(0);
+            callback2.__spy.calls.must.have.length(2);
+
+            interval.stop();
+        });
+
+        it("that works when interval is not started", async () => {
+            const callback1 = spy();
+            const callback2 = spy();
+            const interval = new Interval(callback1, 100);
+
+            interval.changeCallback(callback2);
+            interval.start();
+
+            await wait(100);
+            callback1.__spy.calls.must.have.length(0);
+            callback2.__spy.calls.must.have.length(1);
+
+            interval.stop();
+        });
+    });
 });

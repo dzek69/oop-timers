@@ -426,4 +426,36 @@ describe("Timeout", () => {
             timeout.timeLeft.must.equal(0);
         });
     });
+
+    describe("has changeCallback function", () => {
+        it("that changes callback without restarting the timer", async () => {
+            const callback1 = spy();
+            const callback2 = spy();
+            const timeout = new Timeout(callback1, 200);
+
+            timeout.start();
+            await wait(100);
+            callback1.__spy.calls.must.have.length(0);
+            callback2.__spy.calls.must.have.length(0);
+
+            timeout.changeCallback(callback2);
+
+            await wait(100);
+            callback1.__spy.calls.must.have.length(0);
+            callback2.__spy.calls.must.have.length(1);
+        });
+
+        it("that works when timer is not started", async () => {
+            const callback1 = spy();
+            const callback2 = spy();
+            const timeout = new Timeout(callback1, 100);
+
+            timeout.changeCallback(callback2);
+            timeout.start();
+
+            await wait(100);
+            callback1.__spy.calls.must.have.length(0);
+            callback2.__spy.calls.must.have.length(1);
+        });
+    });
 });

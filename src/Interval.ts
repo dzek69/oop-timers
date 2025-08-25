@@ -6,7 +6,7 @@ type Nil = null | undefined;
  * Replacement class for `setInterval`
  */
 class Interval {
-    private readonly _cb: OmitThisParameter<() => void>;
+    private _cb: OmitThisParameter<() => void>;
 
     private _time: number;
 
@@ -88,6 +88,15 @@ class Interval {
         }
         this._updateTime(newTime);
         this.restartOnly(newTime);
+    }
+
+    /**
+     * Changes the callback function without resetting the interval.
+     *
+     * @param callback - new function to be called when interval fires
+     */
+    public changeCallback(callback: () => void): void {
+        this._cb = callback.bind(null);
     }
 
     /**
