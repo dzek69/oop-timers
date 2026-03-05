@@ -44,8 +44,11 @@ class Timeout {
     private _start() {
         if (this._time !== Infinity) {
             this._timerId = setTimeout(() => {
+                const timerId = this._timerId;
                 this._cb();
-                this.stop();
+                if (this._timerId === timerId) { // user called `start()` in a callback
+                    this.stop();
+                }
             }, this._time);
             this._started = Date.now();
         }

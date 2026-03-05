@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [UNRELEASED]
 - (nothing yet)
 
+## [5.2.1] - 2026-03-05
+### Fixed
+- `Timer` is left stopped if you call `start()` from inside a callback
+
 ## [5.2.0] - 2025-08-25
 ### Added
 - `changeCallback` method

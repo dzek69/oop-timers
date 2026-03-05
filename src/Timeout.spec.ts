@@ -1,5 +1,5 @@
-import { Timeout } from "./Timeout.js";
 import { spy, wait } from "./__test/utils.js";
+import { Timeout } from "./Timeout.js";
 
 describe("Timeout", () => {
     it("waits proper time before firing the callback", async () => {
@@ -457,5 +457,25 @@ describe("Timeout", () => {
             callback1.__spy.calls.must.have.length(0);
             callback2.__spy.calls.must.have.length(1);
         });
+    });
+
+    it("works when you call start() from inside a callback", async () => {
+        let timer: Timeout,
+            call = 0;
+        const callback = spy(() => {
+            if (!timer) {
+                throw new Error("Impossible: no timer");
+            }
+            call++;
+            if (call === 1) {
+                timer.start();
+            }
+        });
+
+        timer = new Timeout(callback, 100, true);
+        await wait(150);
+        callback.__spy.calls.must.have.length(1);
+
+        timer.started.must.be.true();
     });
 });
